@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	while (1) {
-		usleep(20);
+		usleep(8000);
 		showtime();
 	}
 
