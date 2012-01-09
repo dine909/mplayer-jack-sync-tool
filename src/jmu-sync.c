@@ -19,6 +19,8 @@
 
 jack_client_t *client;
 
+jack_nframes_t lastframe=NULL;
+
 static void
 showtime ()
 {
@@ -29,9 +31,13 @@ showtime ()
 	transport_state = jack_transport_query (client, &current);
 	frame_time = jack_frame_time (client);
 
-	float t=(float)current.frame/(float)current.frame_rate;
+	if(lastframe!=current.frame){
 
-	printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,t);
+		float t=(float)current.frame/(float)current.frame_rate;
+		printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,t);
+		lastframe=current.frame;
+	}
+
 
 	switch (transport_state) {
 	case JackTransportStopped:
