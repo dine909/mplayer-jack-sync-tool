@@ -90,11 +90,11 @@ showtime ()
 	frame_time = jack_frame_time (client);
 
 	if(lastframe!=current.frame){
-		float t=(float)current.frame/(float)current.frame_rate;
+		float time=(float)current.frame/(float)current.frame_rate;
 		char current_time[256];
 		snprintf(current_time, sizeof(current_time), "%f", time);
 		send_udp(udp_ip,udp_port,current_time);
-		printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,t);
+		printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,time);
 		lastframe=current.frame;
 
 
