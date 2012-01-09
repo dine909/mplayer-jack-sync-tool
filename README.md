@@ -2,9 +2,9 @@ Installation
 =============
 
 > $ ./configure
-> 
+>
 > $ make
-> 
+>
 > $ sudo make install"
 
 
@@ -32,12 +32,12 @@ Usage
 
 4. on master (or localhost if no netmamanger active) start playback
 
-> "$ jack_transport
-> 
+> $ jack_transport
+>
 > jack_transport> stop
-> 
+>
 > jack_transport> locate 0
-> 
+>
 > jack_transport> play
 
 If all went well mplayer should begin playing.
