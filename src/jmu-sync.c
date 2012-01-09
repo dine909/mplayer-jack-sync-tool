@@ -36,32 +36,32 @@ showtime ()
 		float t=(float)current.frame/(float)current.frame_rate;
 		printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,t);
 		lastframe=current.frame;
+
+
+		switch (transport_state) {
+		case JackTransportStopped:
+			printf ("state: Stopped");
+			break;
+		case JackTransportRolling:
+			printf ("state: Rolling");
+			break;
+		case JackTransportStarting:
+			printf ("state: Starting");
+			break;
+		default:
+			printf ("state: [unknown]");
+			break;
+		}
+
+		if (current.valid & JackPositionBBT)
+			printf ("\tBBT: %3" PRIi32 "|%" PRIi32 "|%04"
+				PRIi32, current.bar, current.beat, current.tick);
+
+		if (current.valid & JackPositionTimecode)
+			printf ("\tTC: (%.6f, %.6f)",
+				current.frame_time, current.next_time);
+		printf ("\n");
 	}
-
-
-	switch (transport_state) {
-	case JackTransportStopped:
-		printf ("state: Stopped");
-		break;
-	case JackTransportRolling:
-		printf ("state: Rolling");
-		break;
-	case JackTransportStarting:
-		printf ("state: Starting");
-		break;
-	default:
-		printf ("state: [unknown]");
-		break;
-	}
-
-	if (current.valid & JackPositionBBT)
-		printf ("\tBBT: %3" PRIi32 "|%" PRIi32 "|%04"
-			PRIi32, current.bar, current.beat, current.tick);
-
-	if (current.valid & JackPositionTimecode)
-		printf ("\tTC: (%.6f, %.6f)",
-			current.frame_time, current.next_time);
-	printf ("\n");
 }
 
 static void
