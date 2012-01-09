@@ -5,7 +5,7 @@ Installation
 >
 > $ make
 >
-> $ sudo make install"
+> $ sudo make install
 
 
 Requirements
