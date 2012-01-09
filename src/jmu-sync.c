@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
-	printf("Starting..");
+	printf("Starting..\n");
 
 	if ((client = jack_client_open("showtime", JackNullOption, NULL)) == 0) {
 		fprintf(stderr, "JACK server not running?\n");
