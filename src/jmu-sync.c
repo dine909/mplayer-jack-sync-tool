@@ -14,12 +14,70 @@
 #include <signal.h>
 #include <stdlib.h>
 
+#if !HAVE_WINSOCK2_H
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <string.h>
+#include <strings.h>
+#include <netdb.h>
+#include <signal.h>
+#else
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif /* HAVE_WINSOCK2_H */
+
 #include <jack/jack.h>
 #include <jack/transport.h>
 
 jack_client_t *client;
 
 jack_nframes_t lastframe=NULL;
+int udp_port   = 23867;
+const char *udp_ip = "127.0.0.1"; // where the master sends datagrams
+                                  // (can be a broadcast address)
+
+static void send_udp(const char *send_to_ip, int port, char *mesg)
+{
+    static int sockfd = -1;
+    static struct sockaddr_in socketinfo;
+
+    if (sockfd == -1) {
+        static const int one = 1;
+        int ip_valid = 0;
+
+      //  startup();
+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        if (sockfd == -1)
+//            exit_player(EXIT_ERROR);
+        	perror("Socket error");
+
+        // Enable broadcast
+        setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one));
+
+#if HAVE_WINSOCK2_H
+        socketinfo.sin_addr.s_addr = inet_addr(send_to_ip);
+        ip_valid = socketinfo.sin_addr.s_addr != INADDR_NONE;
+#else
+        ip_valid = inet_aton(send_to_ip, &socketinfo.sin_addr);
+#endif
+//
+//        if (!ip_valid) {
+//            mp_msg(MSGT_CPLAYER, MSGL_FATAL, MSGTR_InvalidIP);
+//            exit_player(EXIT_ERROR);
+//        }
+
+        socketinfo.sin_family = AF_INET;
+        socketinfo.sin_port   = htons(port);
+    }
+
+    sendto(sockfd, mesg, strlen(mesg), 0, (struct sockaddr *) &socketinfo,
+           sizeof(socketinfo));
+}
 
 static void
 showtime ()
@@ -32,8 +90,10 @@ showtime ()
 	frame_time = jack_frame_time (client);
 
 	if(lastframe!=current.frame){
-
 		float t=(float)current.frame/(float)current.frame_rate;
+		char current_time[256];
+		snprintf(current_time, sizeof(current_time), "%f", time);
+		send_udp(udp_ip,udp_port,current_time);
 		printf ("frame = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",  current.frame, frame_time, current.usecs,current.frame_rate,t);
 		lastframe=current.frame;
 
