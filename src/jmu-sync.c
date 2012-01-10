@@ -97,7 +97,7 @@ static void showtime() {
 	send_udp(udp_ip, udp_port, current_time);
 	if (lastframe != current.frame) {
 		printf(
-				"\x1b[Aframe = %u  frame_time = %u usecs b= %lld fr:%i time: %f\t",
+				"\x1b[Aframe= %u  frame_time= %u usecs= %lld fr_in:%i time: %f\t",
 				current.frame, frame_time, current.usecs, current.frame_rate,
 				time);
 		lastframe = current.frame;
@@ -141,13 +141,19 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[]) {
 	/* try to become a client of the JACK server */
 	int c;
-	while ((c = getopt(argc, argv, "a:p:")) != -1)
+	int frout=(1/120)*1000000;
+
+	while ((c = getopt(argc, argv, "a:p:f:-frame-rate-out:")) != -1)
 		switch (c) {
 		case 'a':
 			udp_ip = optarg;
 			break;
 		case 'p':
 			udp_port = optarg;
+			break;
+		case 'f':
+		case '-frame-rate-out':
+			frout = (1/optarg)*1000000;
 			break;
 		default:
 			abort();
@@ -181,7 +187,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	while (1) {
-		usleep(8000);
+		usleep(frout);
 		showtime();
 	}
 
