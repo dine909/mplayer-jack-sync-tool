@@ -99,7 +99,7 @@ static void showtime() {
 	send_udp(udp_ip, udp_port, current_time);
 	if (lastframe != current.frame) {
 		printf(
-				"\x1b[Aframe= %u  frame_time= %u usecs= %lld fr_in:%i fr_out:%i time: %f\t      ",
+				"\x1b[Aframe= %u  frame_time= %u usecs= %lld fr_in:%i fr_out:%i time: %f\t ",
 				current.frame, frame_time, current.usecs, current.frame_rate, framerate_out , time);
 		lastframe = current.frame;
 
@@ -124,7 +124,7 @@ static void showtime() {
 
 		if (current.valid & JackPositionTimecode)
 			printf("\tTC: (%.6f, %.6f)", current.frame_time, current.next_time);
-		printf("\n");
+		printf("  \n");
 	}
 }
 
