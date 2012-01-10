@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
-	framerate_out_delay=(1/framerate_out)*1000000;
+	framerate_out_delay=(int)(((float)1/(float)framerate_out)*(float)1000000);
 	printf("Starting..\n");
 
 	if ((client = jack_client_open("showtime", JackNullOption, NULL)) == 0) {
