@@ -149,10 +149,10 @@ int main(int argc, char *argv[]) {
 			udp_ip = optarg;
 			break;
 		case 'p':
-			udp_port = *optarg;
+			udp_port = atoi(optarg);
 			break;
 		case 'f':
-			framerate_out=*optarg;
+			framerate_out=atoi(optarg);
 			break;
 		default:
 			abort();
