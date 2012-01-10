@@ -39,6 +39,8 @@ jack_client_t *client;
 jack_nframes_t lastframe = NULL;
 int udp_port = 23867;
 const char *udp_ip = "127.0.0.1"; // where the master sends datagrams
+int framerate_out=120;
+int framerate_out_delay=0;
 // (can be a broadcast address)
 
 static void send_udp(const char *send_to_ip, int port, char *mesg) {
@@ -97,9 +99,8 @@ static void showtime() {
 	send_udp(udp_ip, udp_port, current_time);
 	if (lastframe != current.frame) {
 		printf(
-				"\x1b[Aframe= %u  frame_time= %u usecs= %lld fr_in:%i time: %f\t",
-				current.frame, frame_time, current.usecs, current.frame_rate,
-				time);
+				"\x1b[Aframe= %u  frame_time= %u usecs= %lld fr_in:%i fr_out:%i time: %f\t      ",
+				current.frame, frame_time, current.usecs, current.frame_rate, framerate_out , time);
 		lastframe = current.frame;
 
 		switch (transport_state) {
@@ -141,7 +142,6 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[]) {
 	/* try to become a client of the JACK server */
 	int c;
-	int frout=(1/120)*1000000;
 
 	while ((c = getopt(argc, argv, "a:p:f:")) != -1)
 		switch (c) {
@@ -152,13 +152,14 @@ int main(int argc, char *argv[]) {
 			udp_port = *optarg;
 			break;
 		case 'f':
-			frout = (1/(int)*optarg)*1000000;
+			framerate_out=*optarg;
 			break;
 		default:
 			abort();
 			break;
 		}
 
+	framerate_out_delay=(1/framerate_out)*1000000;
 	printf("Starting..\n");
 
 	if ((client = jack_client_open("showtime", JackNullOption, NULL)) == 0) {
@@ -186,7 +187,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	while (1) {
-		usleep(frout);
+		usleep(framerate_out);
 		showtime();
 	}
 
