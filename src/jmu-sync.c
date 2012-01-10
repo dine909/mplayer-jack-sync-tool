@@ -143,17 +143,16 @@ int main(int argc, char *argv[]) {
 	int c;
 	int frout=(1/120)*1000000;
 
-	while ((c = getopt(argc, argv, "a:p:f:-frame-rate-out:")) != -1)
+	while ((c = getopt(argc, argv, "a:p:f:")) != -1)
 		switch (c) {
 		case 'a':
 			udp_ip = optarg;
 			break;
 		case 'p':
-			udp_port = optarg;
+			udp_port = *optarg;
 			break;
 		case 'f':
-		case '-frame-rate-out':
-			frout = (1/optarg)*1000000;
+			frout = (1/(int)*optarg)*1000000;
 			break;
 		default:
 			abort();
